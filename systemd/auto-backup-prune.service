@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly Backup Prune: confirm all Archives, then prune older local Backups
+
+[Service]
+Type=oneshot
+User=root
+EnvironmentFile=/etc/auto-backup/aws.env
+ExecStart=/opt/auto-backup/service/prune.sh
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
