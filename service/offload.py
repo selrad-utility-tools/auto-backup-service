@@ -33,6 +33,11 @@ def main() -> int:
     parser.add_argument("--bucket", required=True, help="S3 bucket holding Archives")
     parser.add_argument("--region", required=True)
     parser.add_argument("--prefix", default="warehouse", help="S3 key prefix")
+    parser.add_argument(
+        "--endpoint-url",
+        default=None,
+        help="S3-compatible endpoint URL (omit to use the default AWS endpoint)",
+    )
     args = parser.parse_args()
 
     store = Path(args.store).resolve()
@@ -40,7 +45,7 @@ def main() -> int:
         gate_log(f"ERROR store is not a directory: {store}")
         return 1
 
-    client = boto3.client("s3", region_name=args.region)
+    client = boto3.client("s3", region_name=args.region, endpoint_url=args.endpoint_url)
 
     backups = [
         p

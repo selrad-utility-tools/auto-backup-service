@@ -29,6 +29,10 @@ WAREHOUSE_INFRA_DIR=/opt/selrad-warehouse/infra
 BUCKET=CHANGE_ME
 # AWS region
 REGION=CHANGE_ME
+# Key prefix inside the bucket
+S3_PREFIX=warehouse
+# Custom S3-compatible endpoint (empty = default AWS endpoint)
+ENDPOINT_URL=
 EOF
   chmod 600 "$CONFIG"
   echo "wrote $CONFIG - edit it before starting"

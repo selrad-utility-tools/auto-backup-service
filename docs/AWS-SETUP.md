@@ -103,8 +103,10 @@ WAREHOUSE_INFRA_DIR=/path/to/selrad-warehouse/infra
 From the VPS, as root, a manual one-shot run should upload and confirm an object:
 
 ```
-/opt/auto-backup/venv/bin/python /opt/auto-backup/service/offload.py --bucket <your-bucket> --region <region> /path/to/selrad-warehouse/backups/pg-data
+/opt/auto-backup/venv/bin/python /opt/auto-backup/service/offload.py --bucket <your-bucket> --region <region> --prefix warehouse /path/to/selrad-warehouse/backups/pg-data
 ```
+
+(Add `--endpoint-url <url>` if using a custom S3-compatible provider.)
 
 You should see a line like `OFFLOADED 11-05-2026-gz.sql.gz` per file. If the object is genuinely new, remove it again so the nightly run starts clean:
 

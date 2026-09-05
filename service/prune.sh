@@ -15,6 +15,8 @@ mkdir -p "$LOCK_DIR" "$LOG_DIR"
 : "${WAREHOUSE_INFRA_DIR:?set WAREHOUSE_INFRA_DIR in $CONFIG}"
 : "${BUCKET:?set BUCKET in $CONFIG}"
 : "${REGION:?set REGION in $CONFIG}"
+: "${S3_PREFIX:=warehouse}"
+: "${ENDPOINT_URL:=}"
 
 exec 9>"$LOCK_DIR/auto-backup.lock"
 flock -n 9 || { echo "$(date -u +%FT%TZ) another task holds the lock, exiting" >>"$LOG_DIR/prune.log"; exit 0; }
@@ -26,7 +28,10 @@ BACKUP_DIR="$(cd "$WAREHOUSE_INFRA_DIR/../backups/pg-data" && pwd)"
 
 log "weekly prune starting"
 
-"$PYTHON" "$OFFLOAD" --bucket "$BUCKET" --region "$REGION" "$BACKUP_DIR" \
+OFFLOAD_ARGS=(--bucket "$BUCKET" --region "$REGION" --prefix "$S3_PREFIX")
+[ -n "$ENDPOINT_URL" ] && OFFLOAD_ARGS+=(--endpoint-url "$ENDPOINT_URL")
+
+"$PYTHON" "$OFFLOAD" "${OFFLOAD_ARGS[@]}" "$BACKUP_DIR" \
   >>"$LOG_DIR/prune.log" 2>&1 || fail "sweep offload exited $?"
 
 CUTOFF="$(date -d "$RETENTION_DAYS days ago" +%s)"
